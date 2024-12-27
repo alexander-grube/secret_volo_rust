@@ -48,7 +48,7 @@ async fn main() {
         .layer(middleware::from_fn(trace_request))
         .layer(TimeoutLayer::new(Duration::from_secs(1), timeout_handler));
 
-    let addr = "[::]:8080".parse::<SocketAddr>().unwrap();
+    let addr = "[::]:10000".parse::<SocketAddr>().unwrap();
     let addr = Address::from(addr);
 
     println!("Listening on {addr}");
