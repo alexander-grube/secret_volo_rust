@@ -18,7 +18,7 @@ use volo_http::{
     },
     Address,
 };
-use volo_secret_message::json_test_router;
+use volo_secret_message::secret_router;
 
 fn timeout_handler(_: &ServerContext) -> (StatusCode, &'static str) {
     (StatusCode::INTERNAL_SERVER_ERROR, "Timeout!\n")
@@ -44,7 +44,7 @@ async fn main() {
     dotenv().ok();
     tracing_subscriber::fmt::init();
     let app = Router::new()
-        .merge(json_test_router())
+        .merge(secret_router())
         .layer(middleware::from_fn(trace_request))
         .layer(TimeoutLayer::new(Duration::from_secs(1), timeout_handler));
 
