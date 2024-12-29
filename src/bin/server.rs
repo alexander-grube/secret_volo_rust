@@ -18,7 +18,7 @@ use volo_http::{
     },
     Address,
 };
-use volo_secret_message::secret_router;
+use volo_secret_message::{jwt_middleware, secret_router};
 
 fn timeout_handler(_: &ServerContext) -> (StatusCode, &'static str) {
     (StatusCode::INTERNAL_SERVER_ERROR, "Timeout!\n")
@@ -46,6 +46,7 @@ async fn main() {
     let app = Router::new()
         .merge(secret_router())
         .layer(middleware::from_fn(trace_request))
+        .layer(middleware::from_fn(jwt_middleware))
         .layer(TimeoutLayer::new(Duration::from_secs(1), timeout_handler));
 
     let addr = "[::]:10000".parse::<SocketAddr>().unwrap();

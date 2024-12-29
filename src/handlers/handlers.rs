@@ -1,6 +1,6 @@
 use uuid::Uuid;
 use volo_http::{http::StatusCode, Json, PathParams};
-use crate::{db::{insert_secret_message, select_secret_message, pool}, models::{NewSecretMessage, SecretMessage}};
+use crate::{auth, db::{insert_secret_message, pool, select_secret_message}, models::{NewSecretMessage, SecretMessage}};
 
 pub async fn create_secret_message(Json(message): Json<NewSecretMessage>) -> (StatusCode, Result<Json<SecretMessage>, &'static str>) {
     let client = pool().get().await.unwrap();
@@ -16,5 +16,12 @@ pub async fn get_secret_message(PathParams(id): PathParams<String>) -> (StatusCo
     match select_secret_message(&client, id).await {
         Ok(message) => (StatusCode::OK, Ok(Json(message))),
         Err(error) => (StatusCode::NOT_FOUND, Err(error))
+    }
+}
+
+pub async fn create_jwt_token() -> (StatusCode, Result<String, String>) {
+    match auth::create_jwt_token() {
+        Ok(token) => (StatusCode::OK, Ok(token)),
+        Err(error) => (StatusCode::INTERNAL_SERVER_ERROR, Err(error.to_string()))
     }
 }

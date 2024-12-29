@@ -17,6 +17,10 @@ tracing = "0.1.41"
 dotenv = "0.15.0"
 config = "0.13.3"
 
+jwt = "0.16.0"
+hmac = "0.12.1"
+sha2 = "0.10.8"
+
 tokio = { version = "1.42.0", features = ["full"] }
 tracing-subscriber = "0.3.19"
 
