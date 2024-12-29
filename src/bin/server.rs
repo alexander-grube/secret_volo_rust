@@ -51,7 +51,5 @@ async fn main() {
     let addr = "[::]:10000".parse::<SocketAddr>().unwrap();
     let addr = Address::from(addr);
 
-    println!("Listening on {addr}");
-
     Server::new(app).run(addr).await.unwrap();
 }
