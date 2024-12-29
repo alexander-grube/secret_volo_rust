@@ -2193,7 +2193,6 @@ dependencies = [
  "config",
  "deadpool-postgres",
  "dotenv",
- "once_cell",
  "serde",
  "serde_derive",
  "sonic-rs",

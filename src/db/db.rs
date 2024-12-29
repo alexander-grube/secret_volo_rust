@@ -1,24 +1,25 @@
+use std::sync::OnceLock;
+
 use deadpool_postgres::Client;
 use tokio_postgres::NoTls;
 use uuid::Uuid;
 use crate::{config::ExampleConfig, models::SecretMessage};
-use once_cell::sync::Lazy;
 use ::config::Config;
 use deadpool_postgres::Pool;
 
-static POOL: Lazy<Pool> = Lazy::new(|| {
-    let config_ = Config::builder()
-        .add_source(::config::Environment::default())
-        .build()
-        .unwrap();
-
-    let config: ExampleConfig = config_.try_deserialize().unwrap();
-
-    config.pg.create_pool(None, NoTls).unwrap()
-});
+static POOL: OnceLock<Pool> = OnceLock::new();
 
 pub fn pool() -> &'static Pool {
-    &POOL
+    POOL.get_or_init(|| {
+        let config_ = Config::builder()
+            .add_source(::config::Environment::default())
+            .build()
+            .unwrap();
+
+        let config: ExampleConfig = config_.try_deserialize().unwrap();
+
+        config.pg.create_pool(None, NoTls).unwrap()
+    })
 }
 
 pub async fn insert_secret_message(client: &Client, message: &str) -> Result<SecretMessage, &'static str> {
