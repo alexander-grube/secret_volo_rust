@@ -45,8 +45,8 @@ async fn main() {
     tracing_subscriber::fmt::init();
     let app = Router::new()
         .merge(secret_router())
-        .layer(middleware::from_fn(trace_request))
         .layer(middleware::from_fn(jwt_middleware))
+        .layer(middleware::from_fn(trace_request))
         .layer(TimeoutLayer::new(Duration::from_secs(1), timeout_handler));
 
     let addr = "[::]:10000".parse::<SocketAddr>().unwrap();

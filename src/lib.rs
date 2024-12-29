@@ -25,17 +25,24 @@ pub async fn jwt_middleware(
         Some(token) => {
             let token = token.to_str().unwrap();
             if token.starts_with("Bearer ") {
-                Some(token[7..].to_string())
+                token[7..].to_string()
             } else {
-                None
+                return (StatusCode::UNAUTHORIZED, "Invalid token").into_response();
             }
         }
         None => return (StatusCode::UNAUTHORIZED, "No token found").into_response(),
     };
 
-    if !auth::verify_jwt_token(token.expect("Token should be present")).unwrap() {
-        return (StatusCode::UNAUTHORIZED, "Invalid token").into_response();
+    match auth::verify_jwt_token(&token) {
+        Ok(valid) => {
+            if !valid {
+                return (StatusCode::UNAUTHORIZED, "Token expired").into_response();
+            }
+            next.run(cx, req).await.into_response()
+        }
+        Err(error) => {
+            tracing::error!("Error verifying token: {:?}", error);
+            (StatusCode::UNAUTHORIZED, "Invalid token").into_response()
+        },
     }
-
-    next.run(cx, req).await.into_response()
 }
