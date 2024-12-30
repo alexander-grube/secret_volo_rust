@@ -30,7 +30,7 @@ pub async fn jwt_middleware(
                 return (StatusCode::UNAUTHORIZED, "Invalid token").into_response();
             }
         }
-        None => return (StatusCode::UNAUTHORIZED, "No token found").into_response(),
+        None => return (StatusCode::IM_A_TEAPOT, "I'm a Teapot").into_response(),
     };
 
     match auth::verify_jwt_token(&token) {
