@@ -3,7 +3,7 @@ use std::sync::OnceLock;
 use deadpool_postgres::Client;
 use tokio_postgres::NoTls;
 use uuid::Uuid;
-use crate::{config::ExampleConfig, models::{SecretMessage}};
+use crate::{config::ExampleConfig, models::SecretMessage};
 use ::config::Config;
 use deadpool_postgres::Pool;
 
