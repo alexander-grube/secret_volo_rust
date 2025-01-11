@@ -3,9 +3,11 @@ use std::sync::OnceLock;
 use deadpool_postgres::Client;
 use tokio_postgres::NoTls;
 use uuid::Uuid;
-use crate::{config::ExampleConfig, models::SecretMessage};
+use crate::{config::ExampleConfig, models::{SecretMessage}};
 use ::config::Config;
 use deadpool_postgres::Pool;
+
+use super::statements;
 
 static POOL: OnceLock<Pool> = OnceLock::new();
 
@@ -23,7 +25,7 @@ pub fn pool() -> &'static Pool {
 }
 
 pub async fn insert_secret_message(client: &Client, message: &str) -> Result<SecretMessage, &'static str> {
-    let _stmt = "INSERT INTO secret_message (message) VALUES ($1) RETURNING *";
+    let _stmt = statements::INSERT_SECRET_MESSAGE;
     let stmt = client.prepare(&_stmt).await.map_err(|_| "Failed to prepare statement")?;
 
     let rows = client.query(&stmt, &[&message]).await.map_err(|_| "Failed to execute query")?;
@@ -33,7 +35,7 @@ pub async fn insert_secret_message(client: &Client, message: &str) -> Result<Sec
 }
 
 pub async fn select_secret_message(client: &Client, id: Uuid) -> Result<SecretMessage, &'static str> {
-    let _stmt = "SELECT * FROM secret_message WHERE id = $1";
+    let _stmt = statements::SELECT_SECRET_MESSAGE;
     let stmt = client.prepare(&_stmt).await.map_err(|_| "Failed to prepare statement")?;
 
     let rows = client.query(&stmt, &[&id]).await.map_err(|_| "Failed to execute query")?;
